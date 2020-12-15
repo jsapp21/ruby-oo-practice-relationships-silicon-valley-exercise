@@ -50,7 +50,6 @@ class Startup
         end.compact!
     end
 
-    # needs work 
     def big_investors
         investor.each do |investor|
             if investor.total_worth >= 1_000_000_000
