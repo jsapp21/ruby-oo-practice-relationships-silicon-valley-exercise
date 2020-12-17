@@ -2,11 +2,12 @@ require 'pry'
 
 class FundingRound
 
-    attr_accessor :startup, :venture_capitalist, :type, :investment
+    attr_accessor :type, :investment
+    attr_reader :startup, :venture_capitalist
 
     @@all = []
 
-    def initialize (startup, venture_capitalist, type, investment=0)
+    def initialize (startup, venture_capitalist, type, investment)
         @startup = startup
         @venture_capitalist = venture_capitalist
         @type = type
@@ -17,8 +18,6 @@ class FundingRound
     def self.all
         @@all
     end
-
-
 
 end
 

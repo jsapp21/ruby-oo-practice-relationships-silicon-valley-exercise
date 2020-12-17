@@ -14,60 +14,66 @@ class Startup
         @@all << self
     end
 
+    # change the domain & name of the startup
+    # This is the only public method through which the domain should be changed.
     def pivot(name, domain)
-        @name = name
-        @domain = domain
+        self.name = name 
+        self.domain = domain
     end
 
     def self.all
         @@all
     end
     
+    # creates a new funding round & assoicates it with that startup & vc
     def sign_contract(venture_capitalist, type, investment) 
         FundingRound.new(self, venture_capitalist, type, investment.to_f)
     end
 
-    def num_funding_rounds
-        FundingRound.all.map do |startup|
-            startup.startup
+    # creates a list of all funding rounds that the start up has
+    def funding_rounds_list
+        FundingRound.all.select do |funding_instance|
+            funding_instance.startup == self
         end 
+    end
+    
+    # Returns the total number of funding rounds that the startup has
+    def num_funding_rounds
+        funding_rounds_list.count  
     end 
 
+    # Returns the total sum of investments that the startup has
     def total_funds
-      total = FundingRound.all.map do |startup| 
-            if startup.startup == self 
-            startup.investment
-            end
-        end.compact!
-        total.sum
+        funding_rounds_list.map do |fr_instiance|
+            fr_instiance.investment.to_i 
+        end.sum
     end
 
+    # Returns a unique array of all VCs that have invested in the startup
     def investor
-        FundingRound.all.map do |startup|
-            if startup.startup == self
-                startup.venture_capitalist
-            end
-        end.compact!
+       funding_rounds_list.map do |fr_instiance|
+            fr_instiance.venture_capitalist
+       end.uniq 
     end
 
-    # needs work 
+    # Returns a unique array of all VCs that have invested in this company 
+    # are in the Trés Commas club
     def big_investors
-        investor.each do |investor|
-            if investor.total_worth >= 1_000_000_000
-                return investor
-            end 
+        investor.select do |investor|
+            investor.total_worth >= 1_000_000_000
         end 
     end 
 
     private
 
+    # returns first startup through the founders name
     def self.find_by_founder(founder)
-        self.all.select do |startup|
+        self.all.find do |startup|
             startup.founder == founder
-            startup.name
         end
     end
 
+    # returns an array of all of the different startup domains
     def self.domains
         self.all.map do |startup|
             startup.domain
@@ -75,5 +81,3 @@ class Startup
     end
     
 end
-
-#binding.pry 
